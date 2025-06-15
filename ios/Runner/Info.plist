@@ -50,11 +50,8 @@
 	</array>
 	<key>BGTaskSchedulerPermittedIdentifiers</key>
 	<array>
-		<string>task-identifier</string>
-
-		<!-- Register a periodic task in iOS 13+ -->
-		<string>be.tramckrijte.workmanagerExample.iOSBackgroundAppRefresh</string>
+		<string>increase</string>
+		<string>decrease</string>
 	</array>
-
 </dict>
 </plist>
