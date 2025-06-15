@@ -17,15 +17,17 @@ void callbackDispatcher() {
     ) async {
       switch (taskName) {
         case TaskName.increase:
+          print('Worker: increase');
+
           final port = IsolateNameServer.lookupPortByName(
-            'work_manager',
+            'counter_work_manager',
           );
 
           port?.send('increase');
 
           break;
         case TaskName.decrease:
-          print('decrease: $inputData');
+          print('Worker: decrease');
         case Workmanager.iOSBackgroundTask:
           break;
       }
