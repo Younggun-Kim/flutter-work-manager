@@ -1,15 +1,15 @@
 import 'dart:async';
-import 'dart:isolate';
 import 'dart:math';
-import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter_work_manager/shared_preferences/shared_preferences.dart';
 import 'package:workmanager/workmanager.dart';
 
 import 'worker_isolate_mixin.dart';
 
 abstract final class CounterTaskName {
   static const String increase = 'increase';
+  static const String increasePeriod = 'increasePeriod';
 }
 
 @pragma('vm:entry-point')
@@ -18,16 +18,15 @@ void counterWorkManagerDispatcher() {
     String taskName,
     Map<String, dynamic>? inputData,
   ) async {
-    print('Workmanager execute: ${taskName}');
+    if (kDebugMode) {
+      final currentCount = await SharedPreferencesManager.getCount();
+      print('Workmanager execute: $taskName current Count: $currentCount');
+    }
 
     switch (taskName) {
       case CounterTaskName.increase:
-        final sendPort = IsolateNameServer.lookupPortByName(
-          CounterWorkManager.instance.isolateNameServerName,
-        );
-
-        final sign = Random().nextBool() ? 1 : -1;
-        sendPort?.send(Random().nextInt(5) * sign);
+      case CounterTaskName.increasePeriod:
+        SharedPreferencesManager.saveCount(Random().nextInt(5) + 1);
     }
 
     return Future.value(true);
@@ -49,6 +48,8 @@ class CounterWorkManager with WorkerIsolateMixin {
       counterWorkManagerDispatcher,
       isInDebugMode: kDebugMode,
     );
+
+    await periodIncrease();
   }
 
   @override
@@ -63,6 +64,19 @@ class CounterWorkManager with WorkerIsolateMixin {
       CounterTaskName.increase,
       CounterTaskName.increase,
       existingWorkPolicy: ExistingWorkPolicy.append,
+    );
+  }
+
+  /// Andorid - 15분 주기
+  /// iOS - 30분 주기(?)
+  Future<void> periodIncrease() async {
+    if (kDebugMode) {
+      print('\nCounterWorkManager periodIncrease\n');
+    }
+
+    await Workmanager().registerPeriodicTask(
+      CounterTaskName.increasePeriod,
+      CounterTaskName.increasePeriod,
     );
   }
 }

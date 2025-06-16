@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_work_manager/work_manager/work_manager.dart';
 
@@ -13,14 +14,18 @@ class MainBloc extends Bloc<MainBlocEvent, MainBlocState> {
   MainBloc() : super(MainBlocState()) {
     on<MainCountChanged>(
       (event, emit) {
-        print('MainCountIncreased: ${state.count + event.num}');
+        if (kDebugMode) {
+          print('MainCountIncreased: ${state.count + event.num}');
+        }
 
         emit(state.copyWith(count: state.count + event.num));
       },
     );
 
     receivePortListener = CounterWorkManager.instance.listen((message) {
-      print('CounterWorkManager isolate message: ${message}');
+      if (kDebugMode) {
+        print('CounterWorkManager isolate message: $message');
+      }
 
       if (message is int) {
         add(MainCountChanged(message));

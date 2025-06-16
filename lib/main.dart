@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_work_manager/bloc/bloc.dart';
 import 'package:flutter_work_manager/work_manager/work_manager.dart';
 
+import 'shared_preferences/shared_preferences_manager.dart';
+
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -29,11 +31,7 @@ class MyApp extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    const Text('You have pushed the button this many times:'),
-                    Text(
-                      '${state.count}',
-                      style: Theme.of(context).textTheme.headlineMedium,
-                    ),
+                    CounterText(),
                   ],
                 ),
               ),
@@ -46,4 +44,19 @@ class MyApp extends StatelessWidget {
           ),
     );
   }
+}
+
+class CounterText extends StatelessWidget {
+  const CounterText({super.key});
+
+  @override
+  Widget build(BuildContext context) => FutureBuilder(
+    future: SharedPreferencesManager.getCount(),
+    builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
+      return Text(
+        '${snapshot.data}',
+        style: Theme.of(context).textTheme.headlineMedium,
+      );
+    },
+  );
 }
