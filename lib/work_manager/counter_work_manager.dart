@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:isolate';
 import 'dart:math';
 
@@ -53,6 +54,7 @@ class CounterWorkManager with IsolatePortMixin {
   @override
   void init() async {
     super.init();
+    await Workmanager().cancelAll();
     await Workmanager().initialize(
       counterWorkManagerDispatcher,
       isInDebugMode: kDebugMode,
@@ -80,9 +82,11 @@ class CounterWorkManager with IsolatePortMixin {
   /// iOS - 30분 주기(?)
   Future<void> periodIncrease() async {
     /// 등록된 스케쥴이면 빠른 종료
-    if (await Workmanager().isScheduledByUniqueName(
-      CounterTaskName.increasePeriod,
-    )) {
+    ///
+    if (Platform.isAndroid &&
+        await Workmanager().isScheduledByUniqueName(
+          CounterTaskName.increasePeriod,
+        )) {
       return;
     }
 
