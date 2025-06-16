@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:isolate';
 import 'dart:ui';
 
-mixin WorkerIsolateMixin {
+mixin IsolatePortMixin {
   String get isolateNameServerName;
 
   final ReceivePort _receivePort = ReceivePort();
@@ -14,6 +14,10 @@ mixin WorkerIsolateMixin {
       isolateNameServerName,
     );
     _receivePort.close();
+  }
+
+  SendPort? getSendPort() {
+    return IsolateNameServer.lookupPortByName(isolateNameServerName);
   }
 
   StreamSubscription<dynamic> listen(

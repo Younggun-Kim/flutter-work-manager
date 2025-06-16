@@ -13,8 +13,9 @@ import workmanager
     // In AppDelegate.application method
     WorkmanagerPlugin.registerBGProcessingTask(withIdentifier: "increase")
 
+
     // Register a periodic task in iOS 13+
-    WorkmanagerPlugin.registerPeriodicTask(withIdentifier: "decrease", frequency: NSNumber(value: 20 * 60))
+    WorkmanagerPlugin.registerPeriodicTask(withIdentifier: "increasePeriod", frequency: NSNumber(value: 15 * 60))
 
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }

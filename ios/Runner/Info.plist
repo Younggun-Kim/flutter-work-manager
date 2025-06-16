@@ -51,7 +51,7 @@
 	<key>BGTaskSchedulerPermittedIdentifiers</key>
 	<array>
 		<string>increase</string>
-		<string>decrease</string>
+		<string>increasePeriod</string>
 	</array>
 </dict>
 </plist>

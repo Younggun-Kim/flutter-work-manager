@@ -1,11 +1,12 @@
 import 'dart:async';
+import 'dart:isolate';
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_work_manager/shared_preferences/shared_preferences.dart';
 import 'package:workmanager/workmanager.dart';
 
-import 'worker_isolate_mixin.dart';
+import 'isolate_port_mixin.dart';
 
 abstract final class CounterTaskName {
   static const String increase = 'increase';
@@ -18,22 +19,30 @@ void counterWorkManagerDispatcher() {
     String taskName,
     Map<String, dynamic>? inputData,
   ) async {
-    if (kDebugMode) {
-      final currentCount = await SharedPreferencesManager.getCount();
-      print('Workmanager execute: $taskName current Count: $currentCount');
-    }
+    final currentCount = await SharedPreferencesManager.getCount();
 
     switch (taskName) {
       case CounterTaskName.increase:
       case CounterTaskName.increasePeriod:
-        SharedPreferencesManager.saveCount(Random().nextInt(5) + 1);
+        final newCount = currentCount + Random().nextInt(5);
+
+        /// SharedPreferences에 저장
+        SharedPreferencesManager.saveCount(newCount);
+
+        /// Main Isolate의 MainBloc에 메시지 전달
+        SendPort? sendPort = CounterWorkManager.instance.getSendPort();
+
+        sendPort?.send(newCount);
+
+      case Workmanager.iOSBackgroundTask:
+        print('Workmanager.iOSBackgroundTask: ${inputData}');
     }
 
     return Future.value(true);
   });
 }
 
-class CounterWorkManager with WorkerIsolateMixin {
+class CounterWorkManager with IsolatePortMixin {
   CounterWorkManager._internal();
 
   static final CounterWorkManager instance = CounterWorkManager._internal();
@@ -70,8 +79,11 @@ class CounterWorkManager with WorkerIsolateMixin {
   /// Andorid - 15분 주기
   /// iOS - 30분 주기(?)
   Future<void> periodIncrease() async {
-    if (kDebugMode) {
-      print('\nCounterWorkManager periodIncrease\n');
+    /// 등록된 스케쥴이면 빠른 종료
+    if (await Workmanager().isScheduledByUniqueName(
+      CounterTaskName.increasePeriod,
+    )) {
+      return;
     }
 
     await Workmanager().registerPeriodicTask(

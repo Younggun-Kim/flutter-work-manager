@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_work_manager/shared_preferences/shared_preferences.dart';
 import 'package:flutter_work_manager/work_manager/work_manager.dart';
 
 part 'main_bloc_event.dart';
@@ -12,21 +12,22 @@ typedef MainBlocBuilder = BlocBuilder<MainBloc, MainBlocState>;
 
 class MainBloc extends Bloc<MainBlocEvent, MainBlocState> {
   MainBloc() : super(MainBlocState()) {
+    on<MainCountIncreased>((event, emit) {
+      CounterWorkManager.instance.increase();
+    });
+
     on<MainCountChanged>(
       (event, emit) {
-        if (kDebugMode) {
-          print('MainCountIncreased: ${state.count + event.num}');
-        }
-
-        emit(state.copyWith(count: state.count + event.num));
+        emit(state.copyWith(count: event.num));
       },
     );
 
-    receivePortListener = CounterWorkManager.instance.listen((message) {
-      if (kDebugMode) {
-        print('CounterWorkManager isolate message: $message');
-      }
+    on<MainCountUpdated>((event, emit) async {
+      emit(state.copyWith(count: await SharedPreferencesManager.getCount()));
+    });
 
+    receivePortListener = CounterWorkManager.instance.listen((message) {
+      print('Received Message: $message');
       if (message is int) {
         add(MainCountChanged(message));
       }

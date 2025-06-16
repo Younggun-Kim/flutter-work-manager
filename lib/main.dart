@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_work_manager/bloc/bloc.dart';
 import 'package:flutter_work_manager/work_manager/work_manager.dart';
-
-import 'shared_preferences/shared_preferences_manager.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -12,14 +11,19 @@ void main() {
   runApp(
     MainBlocProvider(
       create: (BuildContext context) => MainBloc(),
-      child: const MyApp(),
+      child: MyApp(),
     ),
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
+  @override
+  State<StatefulWidget> createState() => MyAppState();
+}
+
+class MyAppState extends State<MyApp> {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -31,12 +35,29 @@ class MyApp extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    CounterText(),
+                    Text(
+                      '${state.count}',
+                      style: Theme.of(context).textTheme.headlineMedium,
+                    ),
+                    InkWell(
+                      onTap: () async {
+                        context.read<MainBloc>().add(MainBlocEvent.updated());
+                      },
+                      child: Container(
+                        width: 120,
+                        height: 60,
+                        color: Colors.amber,
+                        child: Text('업데이트'),
+                      ),
+                    ),
                   ],
                 ),
               ),
               floatingActionButton: FloatingActionButton(
-                onPressed: () => CounterWorkManager.instance.increase(),
+                onPressed:
+                    () => context.read<MainBloc>().add(
+                      MainBlocEvent.increased(),
+                    ),
                 tooltip: 'Increment',
                 child: const Icon(Icons.add),
               ),
@@ -44,19 +65,4 @@ class MyApp extends StatelessWidget {
           ),
     );
   }
-}
-
-class CounterText extends StatelessWidget {
-  const CounterText({super.key});
-
-  @override
-  Widget build(BuildContext context) => FutureBuilder(
-    future: SharedPreferencesManager.getCount(),
-    builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
-      return Text(
-        '${snapshot.data}',
-        style: Theme.of(context).textTheme.headlineMedium,
-      );
-    },
-  );
 }
