@@ -1,7 +1,7 @@
-import 'dart:isolate';
-import 'dart:ui';
+import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_work_manager/work_manager/work_manager.dart';
 
 part 'main_bloc_event.dart';
 part 'main_bloc_state.dart';
@@ -11,36 +11,29 @@ typedef MainBlocBuilder = BlocBuilder<MainBloc, MainBlocState>;
 
 class MainBloc extends Bloc<MainBlocEvent, MainBlocState> {
   MainBloc() : super(MainBlocState()) {
-    on<MainCountIncreased>(
+    on<MainCountChanged>(
       (event, emit) {
-        print('MainCountIncreased: ${state.count + 1}');
+        print('MainCountIncreased: ${state.count + event.num}');
 
-        emit(state.copyWith(count: state.count + 1));
-      },
-    );
-    on<MainCountDecreased>(
-      (event, emit) {
-        print('MainCountIncreased: ${state.count - 1}');
-
-        emit(state.copyWith(count: state.count - 1));
+        emit(state.copyWith(count: state.count + event.num));
       },
     );
 
-    final receivePort = ReceivePort();
-
-    IsolateNameServer.registerPortWithName(
-      receivePort.sendPort,
-      'counter_work_manager',
-    );
-
-    receivePort.listen((message) {
+    receivePortListener = CounterWorkManager.instance.listen((message) {
       print('CounterWorkManager isolate message: ${message}');
 
-      if (message == 'increase') {
-        add(MainCountIncreased());
-      } else if (message == 'decrease') {
-        add(MainCountDecreased());
+      if (message is int) {
+        add(MainCountChanged(message));
       }
     });
+  }
+
+  late final StreamSubscription receivePortListener;
+
+  @override
+  Future<void> close() {
+    receivePortListener.cancel();
+    CounterWorkManager.instance.dispose();
+    return super.close();
   }
 }

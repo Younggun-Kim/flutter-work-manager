@@ -1,15 +1,11 @@
-import 'dart:isolate';
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_work_manager/bloc/main_bloc.dart';
-import 'package:flutter_work_manager/work_manager/worker.dart';
+import 'package:flutter_work_manager/bloc/bloc.dart';
+import 'package:flutter_work_manager/work_manager/work_manager.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
-  Worker.init();
+  CounterWorkManager.instance.init();
 
   runApp(
     MainBlocProvider(
@@ -42,7 +38,7 @@ class MyApp extends StatelessWidget {
                 ),
               ),
               floatingActionButton: FloatingActionButton(
-                onPressed: () => Worker.increase(),
+                onPressed: () => CounterWorkManager.instance.increase(),
                 tooltip: 'Increment',
                 child: const Icon(Icons.add),
               ),

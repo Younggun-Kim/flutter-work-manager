@@ -3,14 +3,11 @@ part of 'main_bloc.dart';
 sealed class MainBlocEvent {
   const MainBlocEvent();
 
-  const factory MainBlocEvent.increase() = MainCountIncreased;
-  const factory MainBlocEvent.decrease() = MainCountDecreased;
+  const factory MainBlocEvent.countChanged(int delta) = MainCountChanged;
 }
 
-class MainCountIncreased extends MainBlocEvent {
-  const MainCountIncreased();
-}
+class MainCountChanged extends MainBlocEvent {
+  final int num;
 
-class MainCountDecreased extends MainBlocEvent {
-  const MainCountDecreased();
+  const MainCountChanged(this.num);
 }
