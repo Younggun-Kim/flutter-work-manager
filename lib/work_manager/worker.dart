@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:workmanager/workmanager.dart';
 
@@ -24,6 +26,8 @@ class Worker {
     );
   }
 
+  /// Android 주기 - 최소 15분
+  /// iOS 주기 - 약 30분(시스템에 의해 결정됨)
   static void emitPeriodic() {
     Workmanager().registerPeriodicTask(
       WorkerTaskType.periodic,
@@ -35,6 +39,8 @@ class Worker {
   }
 
   static void emitProcessing() {
+    if (!Platform.isIOS) return;
+
     Workmanager().registerProcessingTask(
       WorkerTaskType.periodic,
       WorkerTaskType.periodic,
