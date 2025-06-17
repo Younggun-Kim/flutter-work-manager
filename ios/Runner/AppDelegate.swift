@@ -22,7 +22,9 @@ import workmanager
 
 
     // Register a periodic task in iOS 13+
-    WorkmanagerPlugin.registerPeriodicTask(withIdentifier: "com.testWorkManager.task-period", frequency: NSNumber(value: 15 * 60))
+      WorkmanagerPlugin.registerPeriodicTask(withIdentifier: "com.testWorkManager.task-period", frequency: NSNumber(value: 15 * 60))
+      WorkmanagerPlugin.registerPeriodicTask(withIdentifier: "com.testWorkManager.task-processing", frequency: NSNumber(value: 15 * 60))
+
 
 
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)

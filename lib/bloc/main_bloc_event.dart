@@ -3,13 +3,23 @@ part of 'main_bloc.dart';
 sealed class MainBlocEvent {
   const MainBlocEvent();
 
-  const factory MainBlocEvent.increased() = MainCountIncreased;
+  const factory MainBlocEvent.oneOff() = MainCountOneOff;
+  const factory MainBlocEvent.periodic() = MainCountPeriodic;
+  const factory MainBlocEvent.processing() = MainCountProcessing;
   const factory MainBlocEvent.countChanged(int delta) = MainCountChanged;
   const factory MainBlocEvent.updated() = MainCountUpdated;
 }
 
-class MainCountIncreased extends MainBlocEvent {
-  const MainCountIncreased();
+class MainCountOneOff extends MainBlocEvent {
+  const MainCountOneOff();
+}
+
+class MainCountPeriodic extends MainBlocEvent {
+  const MainCountPeriodic();
+}
+
+class MainCountProcessing extends MainBlocEvent {
+  const MainCountProcessing();
 }
 
 class MainCountChanged extends MainBlocEvent {

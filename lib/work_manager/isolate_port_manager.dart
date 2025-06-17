@@ -2,25 +2,24 @@ import 'dart:async';
 import 'dart:isolate';
 import 'dart:ui';
 
-mixin IsolatePortMixin {
-  String get isolateNameServerName;
+class IsolatePortManager {
+  static final ReceivePort _receivePort = ReceivePort();
+  static const isolateNameServerName = 'worker_isolate_name_server';
 
-  final ReceivePort _receivePort = ReceivePort();
+  IsolatePortManager();
 
   void init() async {}
 
-  void dispose() {
-    IsolateNameServer.removePortNameMapping(
-      isolateNameServerName,
-    );
+  static void dispose() {
+    IsolateNameServer.removePortNameMapping(isolateNameServerName);
     _receivePort.close();
   }
 
-  SendPort? getSendPort() {
+  static SendPort? getSendPort() {
     return IsolateNameServer.lookupPortByName(isolateNameServerName);
   }
 
-  StreamSubscription<dynamic> listen(
+  static StreamSubscription<dynamic> listen(
     void Function(dynamic message)? onData,
   ) {
     IsolateNameServer.registerPortWithName(
