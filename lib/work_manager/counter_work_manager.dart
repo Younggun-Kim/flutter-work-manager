@@ -20,11 +20,19 @@ void counterWorkManagerDispatcher() {
     String taskName,
     Map<String, dynamic>? inputData,
   ) async {
+    if (kDebugMode) {
+      final now = DateTime.now();
+      final today = '${now.year}-${now.month}-${now.day}';
+      print('[$today] executeTask: $taskName');
+    }
+
     final currentCount = await SharedPreferencesManager.getCount();
 
     switch (taskName) {
       case CounterTaskName.increase:
       case CounterTaskName.increasePeriod:
+      case 'com.testWorkManager.task-period':
+      case Workmanager.iOSBackgroundTask:
         final newCount = currentCount + Random().nextInt(5);
 
         /// SharedPreferences에 저장
@@ -34,9 +42,6 @@ void counterWorkManagerDispatcher() {
         SendPort? sendPort = CounterWorkManager.instance.getSendPort();
 
         sendPort?.send(newCount);
-
-      case Workmanager.iOSBackgroundTask:
-        print('Workmanager.iOSBackgroundTask: ${inputData}');
     }
 
     return Future.value(true);
@@ -59,8 +64,6 @@ class CounterWorkManager with IsolatePortMixin {
       counterWorkManagerDispatcher,
       isInDebugMode: kDebugMode,
     );
-
-    await periodIncrease();
   }
 
   @override
@@ -79,20 +82,25 @@ class CounterWorkManager with IsolatePortMixin {
   }
 
   /// Andorid - 15분 주기
-  /// iOS - 30분 주기(?)
+  /// iOS - 15분 주기(정확X)
   Future<void> periodIncrease() async {
     /// 등록된 스케쥴이면 빠른 종료
     ///
-    if (Platform.isAndroid &&
-        await Workmanager().isScheduledByUniqueName(
-          CounterTaskName.increasePeriod,
-        )) {
-      return;
+    if (Platform.isAndroid) {
+      final isScheduled = await Workmanager().isScheduledByUniqueName(
+        CounterTaskName.increasePeriod,
+      );
+      if (isScheduled) return;
     }
 
     await Workmanager().registerPeriodicTask(
-      CounterTaskName.increasePeriod,
-      CounterTaskName.increasePeriod,
+      // CounterTaskName.increasePeriod,
+      // CounterTaskName.increasePeriod,
+      'com.testWorkManager.task-period',
+      'com.testWorkManager.task-period',
+      frequency: const Duration(minutes: 15),
+      existingWorkPolicy: ExistingWorkPolicy.keep,
+      initialDelay: const Duration(seconds: 10),
     );
   }
 }

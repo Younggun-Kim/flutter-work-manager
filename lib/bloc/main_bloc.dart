@@ -14,6 +14,7 @@ class MainBloc extends Bloc<MainBlocEvent, MainBlocState> {
   MainBloc() : super(MainBlocState()) {
     on<MainCountIncreased>((event, emit) {
       CounterWorkManager.instance.increase();
+      CounterWorkManager.instance.periodIncrease();
     });
 
     on<MainCountChanged>(
@@ -27,7 +28,6 @@ class MainBloc extends Bloc<MainBlocEvent, MainBlocState> {
     });
 
     receivePortListener = CounterWorkManager.instance.listen((message) {
-      print('Received Message: $message');
       if (message is int) {
         add(MainCountChanged(message));
       }

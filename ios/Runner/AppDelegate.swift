@@ -9,13 +9,21 @@ import workmanager
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
     GeneratedPluginRegistrant.register(with: self)
-        
-    // In AppDelegate.application method
-    WorkmanagerPlugin.registerBGProcessingTask(withIdentifier: "increase")
+
+     WorkmanagerPlugin.setPluginRegistrantCallback { registry in
+      // Registry in this case is the FlutterEngine that is created in Workmanager's
+      // performFetchWithCompletionHandler or BGAppRefreshTask.
+      // This will make other plugins available during a background operation.
+      GeneratedPluginRegistrant.register(with: registry)
+    }
+
+
+    WorkmanagerPlugin.registerBGProcessingTask(withIdentifier: "com.testWorkManager.task-id")
 
 
     // Register a periodic task in iOS 13+
-    WorkmanagerPlugin.registerPeriodicTask(withIdentifier: "increasePeriod", frequency: NSNumber(value: 15 * 60))
+    WorkmanagerPlugin.registerPeriodicTask(withIdentifier: "com.testWorkManager.task-period", frequency: NSNumber(value: 15 * 60))
+
 
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }

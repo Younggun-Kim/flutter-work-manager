@@ -50,8 +50,10 @@
 	</array>
 	<key>BGTaskSchedulerPermittedIdentifiers</key>
 	<array>
-		<string>increase</string>
-		<string>increasePeriod</string>
+		<string>com.testWorkManager.task-id</string>
+		<string>com.testWorkManager.task-period</string>
 	</array>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>This app requires access to the local network to support debugging and development tools.</string>
 </dict>
 </plist>

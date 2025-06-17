@@ -27,10 +27,10 @@ class MyAppState extends State<MyApp> {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MainBlocBuilder(
-      builder:
-          (BuildContext context, MainBlocState state) => MaterialApp(
-            home: Scaffold(
+    return MaterialApp(
+      home: MainBlocBuilder(
+        builder:
+            (context, state) => Scaffold(
               body: Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -42,6 +42,9 @@ class MyAppState extends State<MyApp> {
                     InkWell(
                       onTap: () async {
                         context.read<MainBloc>().add(MainBlocEvent.updated());
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('업데이트됨')),
+                        );
                       },
                       child: Container(
                         width: 120,
@@ -62,7 +65,7 @@ class MyAppState extends State<MyApp> {
                 child: const Icon(Icons.add),
               ),
             ),
-          ),
+      ),
     );
   }
 }
