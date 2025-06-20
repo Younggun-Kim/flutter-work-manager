@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_work_manager/shared_preferences/shared_preferences_manager.dart';
 import 'package:workmanager/workmanager.dart';
 
+import '../network/network.dart';
 import 'isolate_port_manager.dart';
 import 'worker_task_type.dart';
 
@@ -58,6 +59,16 @@ void workerDispatcher() {
         SendPort? sendPort = IsolatePortManager.getSendPort();
 
         sendPort?.send(0);
+
+        break;
+
+      case WorkerTaskType.getPost:
+        final GetPostResponseModel? response = await Api().getPost(1);
+
+        if (response != null) {
+          SendPort? sendPort = IsolatePortManager.getSendPort();
+          sendPort?.send(response.toJson());
+        }
 
         break;
     }

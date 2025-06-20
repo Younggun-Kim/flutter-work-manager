@@ -18,7 +18,15 @@ class Worker {
     Workmanager().printScheduledTasks();
   }
 
-  static void emitOneOff() {
+  static void getPost() {
+    Workmanager().registerOneOffTask(
+      WorkerTaskType.getPost,
+      WorkerTaskType.getPost,
+      existingWorkPolicy: ExistingWorkPolicy.replace,
+    );
+  }
+
+  static void registerOneOffTask() {
     Workmanager().registerOneOffTask(
       WorkerTaskType.oneOff,
       WorkerTaskType.oneOff,
@@ -28,7 +36,7 @@ class Worker {
 
   /// Android 주기 - 최소 15분
   /// iOS 주기 - 약 30분(시스템에 의해 결정됨)
-  static void emitPeriodic() {
+  static void registerPeriodicTask() {
     Workmanager().registerPeriodicTask(
       WorkerTaskType.periodic,
       WorkerTaskType.periodic,
@@ -38,7 +46,7 @@ class Worker {
     );
   }
 
-  static void emitProcessing() {
+  static void registerProcessingTask() {
     if (!Platform.isIOS) return;
 
     Workmanager().registerProcessingTask(

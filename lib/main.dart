@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -40,6 +42,16 @@ class MyAppState extends State<MyApp> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
+                    Button(
+                      text: 'Post 조회',
+                      bgColor: Colors.greenAccent,
+                      onTap: () {
+                        context.read<MainBloc>().add(
+                          MainBlocEvent.postRetrieved(),
+                        );
+                      },
+                    ),
+                    Text(state.post.toString()),
                     Text(
                       '${state.count}',
                       style: Theme.of(context).textTheme.headlineMedium,
@@ -67,15 +79,6 @@ class MyAppState extends State<MyApp> {
                           },
                         ),
                         Button(
-                          text: 'Processing',
-                          bgColor: Colors.yellowAccent,
-                          onTap: () {
-                            context.read<MainBloc>().add(
-                              MainBlocEvent.processing(),
-                            );
-                          },
-                        ),
-                        Button(
                           text: 'Update',
                           bgColor: Colors.redAccent,
                           onTap: () {
@@ -84,13 +87,24 @@ class MyAppState extends State<MyApp> {
                             );
                           },
                         ),
-                        Button(
-                          text: 'Log',
-                          bgColor: Colors.orangeAccent,
-                          onTap: () {
-                            Worker.log();
-                          },
-                        ),
+                        if (Platform.isIOS)
+                          Button(
+                            text: 'Processing',
+                            bgColor: Colors.yellowAccent,
+                            onTap: () {
+                              context.read<MainBloc>().add(
+                                MainBlocEvent.processing(),
+                              );
+                            },
+                          ),
+                        if (Platform.isIOS)
+                          Button(
+                            text: 'Log',
+                            bgColor: Colors.orangeAccent,
+                            onTap: () {
+                              Worker.log();
+                            },
+                          ),
                       ],
                     ),
                   ],
